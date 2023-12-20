@@ -3,19 +3,25 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { createStore } from "redux";
-import rootReducer from "./reducers/index";
+import { Action, Reducer, applyMiddleware, createStore } from "redux";
+import rootReducer, { RootState } from "./reducers/index";
 import { Provider } from "react-redux";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
-const store = createStore(rootReducer);
 
+const loggerMiddleware = (store: any) => (next: any) => (action: any) => {
+  console.log("store", store);
+  console.log("action", action);
+  next(action);
+}
 
+const middleware = applyMiddleware(loggerMiddleware);
 
-console.log("store.getState", store.getState());
+// 원래 as없이 하려고 했는데 안되서 일단 이렇게 함.
+const store = createStore(rootReducer as Reducer<Partial<RootState>, Action>, middleware);
 
 const render = () =>
   root.render(
